@@ -119,7 +119,7 @@ The eight lights sit in one column on the lid. Look at the two rear lights, **5V
 | **INT** | yellow | The cable raised an interrupt. | Lit right after you insert a cable is normal. The software clears it. |
 | **LPMD** | blue | The cable end is in low power. | Dark means high power. Do not pull the cable or the charger now. |
 | **5V IN** | green | A charger is on the **5V 3A** port. | Dark before a high-power test: plug the charger in. |
-| **PC** | green | The software has opened the unit. | Dark with **USB** lit: a driver or permission problem on the computer. |
+| **PC** | green | The software has opened the unit. | Dark with **USB** lit: a driver or permission problem on the computer, or the port did not register the unit. Plug it again, or use another port. |
 
 The cable's own light is not visible through the box.
 

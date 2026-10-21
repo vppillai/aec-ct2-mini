@@ -58,11 +58,11 @@ The table lists the six pages of the web UI.
 
 ![The Help page](images/ui_help.png)
 
-*The Help page in simulation mode. Each card has the steps for one page and the details behind Show details.*
+*The Help page. Each card has the steps for one page and the details behind Show details.*
 
 ![The Settings page](images/ui_settings.png)
 
-*The Settings page in simulation mode. The record folders are where the files go.*
+*The Settings page. The record folders are where the files go.*
 
 Every field with a `?` has a one-line meaning. The glossary on the Help page lists them all.
 

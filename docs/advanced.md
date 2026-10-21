@@ -4,7 +4,7 @@ The **Advanced** page holds every command of the tool, grouped by task. Each res
 
 ![The Advanced page, Read tab, after an identity read](images/ui_advanced.png)
 
-*The Read tab in simulation mode. Identity shows the plate values as a table.*
+*The Read tab on a real cable. Identity shows the plate values as a table.*
 
 ## The tabs
 

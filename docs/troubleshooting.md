@@ -9,6 +9,7 @@ One table per area. Find the symptom, read the cause, do the fix. When the fix d
 | **5V IN** is dark with the charger in | The charger has no power, or it is in the wrong port. | Check the charger. Use the **5V 3A** port (`PWR ONLY` in the software). |
 | **USB** is dark with the host cable in | The host cable is in **5V 3A**. | Move it to the **PC** port. |
 | **USB** is lit but **PC** stays dark | The host has not opened the unit. | Start the software. On Linux, run `aectest setup-linux` and plug the unit again. |
+| **PC** stays dark after a plug-in, and the software does not list the unit | The computer did not register the unit on that port. Some hub ports do this. | Unplug the unit. Wait 5 s. Plug the unit again, or use another port on the computer. A port direct on the computer works best. |
 | **POWER** flickers | The 5 V source is too weak. The rail restarts. | Use a 5 V, 3 A charger on **5V 3A**. Never a computer port alone for high power. |
 | **PRES** or **INT** is lit with no cable | Normal while the power switch (`MOD PWR`) is off. | Ignore it unless **POWER** is lit. |
 | **LPMD** is dark while on a charger alone | The cable is in high power without a host. | Not allowed. Plug the host and let the software return the cable to low power. |

@@ -33,7 +33,7 @@ The software opens in your browser. The left side has six pages.
 
 ![The Cable page with one cable read](images/ui_cable.png)
 
-*The Cable page in simulation mode. One card per unit. The plate shows the identity, the applications and the test features.*
+*The Cable page with a cable in two units. One card per unit. The plate shows the identity, the applications and the test features.*
 
 ## Where to go next
 
