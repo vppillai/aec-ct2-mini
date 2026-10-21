@@ -38,7 +38,7 @@ The table lists what the tester reads and tests.
 |---|---|
 | Form factor | QSFP-DD. |
 | Management | CMIS over the two-wire bus. We read cables with revisions 4.0 and 5.x. |
-| Active electrical cable (AEC) | Yes. Both ends go into two coupled units for the full test. |
+| Active electrical cable (AEC) | Yes. Both ends go into two units for the full test. |
 | Optical transceiver | Yes, one per unit. For a two-end test, join two transceivers with a fibre trunk. |
 | Pattern test | Runs inside the cable, when the cable offers it. The tester has no data lanes of its own. |
 | What the tester does not do | No traffic from a host. No bit-error test from the host side. |
@@ -76,6 +76,5 @@ The table gives the size and the mass of one unit.
 | Length | 147.1 mm, hood on. |
 | Width | 47.5 mm. |
 | Height | 32.6 mm over the hood, 23.6 mm over the lid. |
-| Two units coupled | 95 mm wide. |
 | Circuit board | 42 mm by 136 mm. |
 | Mass | We did not weigh the unit. The printed parts are about 80 g by the slicer. The board with its cage is about 54 g by calculation. |

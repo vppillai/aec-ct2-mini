@@ -86,7 +86,7 @@ The command line serves the same functions. Use it for scripts, for a lot of cab
 | `aectest inspect export --lot ID` | One zip of the whole lot for engineering. |
 | `aectest selftest` | Run the built-in checks on simulated units. |
 
-`aectest-tech` is the same program with the technician commands only. Every command has `--help`.
+`aectest-tech` is the same program with the technician commands only. Every command has `--help`. The full command reference, every verb and flag, is in `software/README.md` in the repository.
 
 The guided test on the command line needs a jig profile. The profile names the two units and records that the power setup was checked. An engineer writes and signs it once per bench. Copy the example file in the package, `jig_profile.example.yaml`. Then sign it:
 

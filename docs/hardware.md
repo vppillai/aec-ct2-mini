@@ -8,14 +8,11 @@ The tester is a small black box. It has one cable port at the front and two USB-
 
 ## What is in the box
 
-The box holds one unit with its hood on. A pair ships with three coupling parts.
+The box holds one unit with its hood on.
 
 | Part | What it does |
 |---|---|
 | The unit | One tester with its hood. The serial `CT2M-NN` is written in the **UNIT** field on the lid. |
-| The front key | A small block that drops into the pockets near the cable ports of two units. |
-| The key bar | A flat bar that slides into the rear pockets of two units. |
-| The sole bridge | A clip that slides under two units for a sideways hold. |
 
 The charger, the data cable and the fan are on the [Getting started](getting-started.md) list. Check them before the first test.
 
@@ -87,7 +84,7 @@ When a charger is plugged in, the charger feeds the unit. The host port then car
 
 ### Sides and sole
 
-Each long side has a row of vent slots. A pocket mouth sits at the rear end of each long side. The pockets take the key bar that couples two units. The sole has four rubber feet. The feet cover the four screws that hold the box together. The sole carries no label.
+Each long side has a row of vent slots. A pocket mouth sits at the rear end of each long side. The pockets are reserved for a later part. The sole has four rubber feet. The feet cover the four screws that hold the box together. The sole carries no label.
 
 ![The unit from above](images/case_top.png)
 
@@ -148,24 +145,7 @@ One unit holds one cable end. With one unit you read the identity, the monitors 
 
 Two units hold both ends of one cable. The software then runs the pattern test from end A to end B and back. This is the full cable test. Unit A is the unit with the lower serial.
 
-![Two units coupled](images/case_pair_rear.png)
-
-*Two units coupled side by side, from the rear. The teal block at the left is one end of the key bar.*
-
-![Coupling two units](images/case_coupling.png)
-
-*Coupling two units. The key bar slides into the rear pockets. The front key sits under the hoods.*
-
-To couple two units:
-
-1. Lift both hoods.
-2. Stand the units side by side with the rear faces in line.
-3. Drop the front key into the two pockets near the cable ports. Its wide ends go into the walls.
-4. Put both hoods back.
-5. Slide the key bar into the two rear pocket mouths from the rear. Push it in until it is flush.
-6. For a sideways hold, slide the sole bridge under both units from the rear. Its arms snap over the outer edges.
-
-To part the units, pull the key bar out at the rear. Then lift the hoods and take the front key out.
+Place the two units side by side. They need no mechanical link. The software pairs them by serial.
 
 ## Inside the box
 
