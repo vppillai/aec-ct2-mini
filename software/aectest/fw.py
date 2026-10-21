@@ -384,7 +384,7 @@ def cmd_fw(port, cmd, a, say, serial):
             raise SystemExit('fw-update needs --image FILE (the vendor binary)')
         pw = int(a.password, 0) if getattr(a, 'password', None) else None
         if pw is not None and not 0 <= pw <= 0xFFFFFFFF:
-            raise SystemExit('--password is four bytes, e.g. 0x00001011')
+            raise SystemExit('--password is four bytes, e.g. 0x12AB34CD')
         res = fw_update(port, a.image, say, dry_run=a.plan, commit=a.commit, run=a.run_image, force=a.force,
                         header_bytes=a.header_bytes, confirm=a.confirm, image_version=a.image_version, password=pw,
                         run_only=getattr(a, 'run_only', False))

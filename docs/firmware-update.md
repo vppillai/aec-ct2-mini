@@ -54,12 +54,14 @@ The software refuses a step when a guard fails. There is no override except for 
 
 ## On the command line
 
+`0xNNNNNNNN` stands for the host password of the cable. The cable vendor gives it. Never put it in a ticket or a report.
+
 ```sh
 aectest bringup --serial CT2M-01 fw-info
-aectest bringup --serial CT2M-01 fw-update --image FILE --image-version 5.6 --password 0x00001011 --plan
-aectest bringup --serial CT2M-01 fw-update --image FILE --image-version 5.6 --password 0x00001011
-aectest bringup --serial CT2M-01 fw-update --image FILE --image-version 5.6 --password 0x00001011 --run-only --run-image
-aectest bringup --serial CT2M-01 fw-update --image FILE --image-version 5.6 --password 0x00001011 --run-only --commit --confirm 'COMMIT CRD0000000000001'
+aectest bringup --serial CT2M-01 fw-update --image FILE --image-version 5.6 --password 0xNNNNNNNN --plan
+aectest bringup --serial CT2M-01 fw-update --image FILE --image-version 5.6 --password 0xNNNNNNNN
+aectest bringup --serial CT2M-01 fw-update --image FILE --image-version 5.6 --password 0xNNNNNNNN --run-only --run-image
+aectest bringup --serial CT2M-01 fw-update --image FILE --image-version 5.6 --password 0xNNNNNNNN --run-only --commit --confirm 'COMMIT CRD0000000000001'
 aectest bringup --serial CT2M-01 fw-abort
 ```
 
