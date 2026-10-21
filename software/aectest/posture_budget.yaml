@@ -1,0 +1,20 @@
+# The posture table: the power [W] a module may dissipate for a 70 C module case in each cooling posture, 25 C ambient.
+# The numbers come from a thermal analysis of the case with the heat sink and are not calibrated by measurement.
+# The table is informational: the tool prints a warning without --posture and refuses nothing.
+source: thermal analysis of the case with the heat sink, 25 C ambient, numbers copied, not derived here
+ambient_scale:            # the 35 C figure divided by the 25 C figure, from the same analysis
+  25: 1.0
+  35: 0.78
+postures:
+  hood-on:
+    w_25c: 0.64
+    note: closed hood, natural convection -- supports no powered module class (class 1 = 1.5 W)
+  hood-off:
+    w_25c: 1.27
+    note: hood off, natural convection
+  fan:
+    w_25c: 3.75
+    note: the case fan fitted and running
+  forced-air:
+    w_25c: 4.4
+    note: table fan through the fins with the hood off; the lower of the two analysis rows (4.43 W at h = 30 W/m2K)

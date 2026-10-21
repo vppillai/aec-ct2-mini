@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aectest"
+description = "AEC-CT2-MINI test software: bring-up, R&D session, technician flow, lot loop"
+readme = "README.md"
+requires-python = ">=3.11"
+dynamic = ["version"]
+dependencies = [
+    "pyftdi==0.57.2",
+    "pyyaml==6.0.3",
+    "rich==15.0.0",
+]
+
+[project.scripts]
+aectest = "aectest.cli:main"
+aectest-tech = "aectest.cli_tech:main"
+
+[tool.setuptools]
+packages = ["aectest", "aectest.cmis", "aectest.fake_modules"]
+
+[tool.setuptools.dynamic]
+version = {file = "aectest/VERSION"}
+
+[tool.setuptools.package-data]
+aectest = ["VERSION", "CHANGELOG.md", "posture_budget.yaml", "jig_profile.example.yaml", "data/99-aec-ct2-mini.rules", "criteria/*.yaml", "web/*", "web2/*"]
+"aectest.fake_modules" = ["*.yaml"]

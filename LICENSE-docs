@@ -1,0 +1,14 @@
+Documentation license
+
+The documentation in this repository is licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0). That covers the files under
+docs/, the README and the pictures.
+
+You may share and adapt the documentation for any purpose, also commercially.
+Give credit to the author and mark the changes you made.
+
+The full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+A summary: https://creativecommons.org/licenses/by/4.0/
+
+The software under software/ is licensed separately under the MIT License in
+the file LICENSE. See DISCLAIMER.md before you use any part of this repository.

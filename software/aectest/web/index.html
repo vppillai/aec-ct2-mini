@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AEC-CT2-MINI tester</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav id="rail" aria-label="Main">
+  <div class="brand"><b>AEC-CT2 MINI</b><span>cable tester</span></div>
+  <button class="nav" data-view="cable" aria-current="page"><svg viewBox="0 0 24 24"><path d="M7 3v5M17 3v5M5 8h14v4a7 7 0 0 1-14 0V8zM12 19v3"/></svg><span>Cable</span></button>
+  <button class="nav" data-view="test"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg><span>Test a cable</span></button>
+  <button class="nav" data-view="eng"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8M14 4v6M8 14v6"/></svg><span>Advanced</span></button>
+  <button class="nav" data-view="records"><svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg><span>Records</span></button>
+  <button class="nav" data-view="help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/></svg><span>Help</span></button>
+  <button class="nav" data-view="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3.9a7 7 0 0 0-2.1-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2.1 1.2l-2.3-.9-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 2.1 1.2L10 21h4l.5-2.6a7 7 0 0 0 2.1-1.2l2.3.9 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg><span>Settings</span></button>
+  <div class="foot">
+    <div id="conn" class="conn connecting"><span class="dot"></span><span id="conn-text">Connecting</span></div>
+    <div id="mode"></div>
+    <div id="version" class="version"></div>
+  </div>
+</nav>
+
+<main>
+  <div id="offline" class="banner fail" hidden><span>Server not reachable. Reconnecting.</span></div>
+
+  <section id="cable" class="view" data-active>
+    <div class="page-head">
+      <div><h1>Cable</h1><p>What is plugged into each unit right now. Read the cable to see its identity, power class, applications and test features.</p></div>
+      <div class="actions"><button class="btn" id="cable-refresh">Refresh units</button><button class="btn primary" id="cable-read-all">Read all cables</button></div>
+    </div>
+    <div id="cable-banner"></div>
+    <div id="cable-cards" class="grid cards"></div>
+  </section>
+
+  <section id="test" class="view">
+    <div class="page-head">
+      <div><h1>Test a cable</h1><p>The guided test for one cable. Answer each question. The verdict and the report come at the end.</p></div>
+    </div>
+    <div id="test-banner"></div>
+    <div class="card" id="test-setup">
+      <form id="tech-form">
+        <input type="hidden" name="sku" value="auto">
+        <div class="fields">
+          <label class="field"><span>Ends <span class="hint" role="button" tabindex="0" data-hint="One end: the cable end in unit A. Both ends: A and B, with the PRBS step between them.">?</span></span>
+            <select name="mode" id="tech-mode"><option value="one">One end (unit A)</option><option value="both">Both ends (A and B)</option></select></label>
+          <label class="field"><span>Unit A</span><select name="a" data-units></select></label>
+          <label class="field need-b"><span>Unit B</span><select name="b" data-units data-second></select></label>
+          <label class="field"><span>Label serial <span class="hint" role="button" tabindex="0" data-hint="Filled from the cable when you read it. Scan or type the serial printed on the label over it when the two differ. Empty means not scanned.">?</span></span><input name="label_sn" placeholder="filled at Read cable"></label>
+          <label class="field"><span>Operator <span class="hint" role="button" tabindex="0" data-hint="Your login name. Change it when another person runs the test.">?</span></span><input name="operator" placeholder="your name"></label>
+        </div>
+        <div class="row"><button type="button" class="btn" id="tech-read">Read cable</button><span class="hint" role="button" tabindex="0" data-hint="Reads the identity from the cable in unit A and looks it up in the cable database. No typing of a cable type.">?</span><span class="msg" id="tech-msg"></span></div>
+        <div id="tech-match" class="match" hidden></div>
+        <div class="row"><button type="submit" class="btn primary big" id="tech-start" disabled>Start the test</button></div>
+      </form>
+    </div>
+    <div id="test-run" hidden>
+      <div class="stepper" id="tech-stepper"></div>
+      <details class="step-now" id="tech-now" hidden open><summary><span class="spin" aria-hidden="true"></span><span id="tech-now-title"></span><span class="stamp" id="tech-now-elapsed"></span></summary><p class="wait" id="tech-now-wait"></p><p class="stamp mono" id="tech-now-activity"></p><p id="tech-now-does"></p><p id="tech-now-judges"></p><p id="tech-now-time"></p></details>
+      <div id="tech-prechecks" hidden></div>
+      <div class="card" id="tech-step-view" hidden><div class="row" style="justify-content:space-between"><h3 id="tech-step-view-title" style="margin:0"></h3><button type="button" class="btn small" id="tech-step-view-close">Close</button></div><div id="tech-step-view-body"></div></div>
+      <div class="card" id="tech-ask" hidden>
+        <p class="question" id="tech-ask-text"></p>
+        <div class="row"><button class="btn big pass" id="tech-yes">Done</button><input id="tech-skip-reason" placeholder="why skip this step" hidden><button class="btn big" id="tech-skip" hidden disabled>Skip this step</button><button class="btn big" id="tech-back" hidden>Back to setup</button><button class="btn big fail" id="tech-no">Stop the test</button></div>
+      </div>
+      <p class="stamp confirm" id="tech-confirm" hidden></p>
+      <div class="card" id="tech-live" hidden><h3>Temperature and Vcc during the high-power step</h3><svg class="chart" id="tech-chart"></svg><ul class="legend" id="tech-legend"></ul></div>
+      <div class="card end" id="tech-end" hidden>
+        <div class="end-head"><div class="end-status" id="tech-end-status"></div><div class="end-text"><div class="end-reason" id="tech-end-reason"></div><div class="end-next" id="tech-end-next"></div></div></div>
+        <div class="chips" id="tech-end-chips"></div>
+        <details class="raw" id="tech-end-reasons" hidden><summary></summary><ul class="reasons"></ul></details>
+        <div class="row actions"><button type="button" class="btn primary big" id="tech-again">Test another cable</button><a class="btn" id="tech-report-link" target="_blank" hidden>Open the record</a><button type="button" class="btn" id="tech-copy-report" data-copy-log="#tech-report" hidden>Copy the report</button><span class="stamp copy-msg"></span></div>
+        <details class="raw" id="tech-report-card" hidden><summary>Report</summary><div class="row"><button type="button" class="btn" data-render="#tech-report">Render</button><button type="button" class="btn" data-copy-log="#tech-report">Copy</button><span class="stamp copy-msg"></span></div><pre class="mono-box" id="tech-report" data-log></pre></details>
+      </div>
+      <details class="raw card"><summary>Log</summary><div class="row"><button type="button" class="btn" data-render="#tech-log">Render</button><button type="button" class="btn" data-copy-log="#tech-log">Copy</button><span class="stamp copy-msg"></span></div><pre class="mono-box log" id="tech-log" data-log></pre></details>
+    </div>
+  </section>
+
+  <section id="eng" class="view">
+    <div class="page-head">
+      <div><h1>Advanced</h1><p>Every command of the tool, grouped by task. Results come as cards with the raw JSON behind a toggle. High power needs two confirmations.</p></div>
+    </div>
+    <div id="eng-banner"></div>
+    <div class="tabs" role="tablist" id="eng-tabs">
+      <button role="tab" aria-selected="true" data-tab="read" title="Read the module: nothing changes">Read</button>
+      <button role="tab" data-tab="control" title="Change the module state: registers, high power">Control</button>
+      <button role="tab" data-tab="run" title="Runs between two units: PRBS, link, trend, loopback">Run</button>
+      <button role="tab" data-tab="query" title="Command block queries and the firmware">Query</button>
+      <button role="tab" data-tab="derive" title="The cable database and a criteria file from the plugged cable">Derive</button>
+      <button role="tab" data-tab="features" title="Every advertised feature of the module, and a way to exercise each one">Features</button>
+    </div>
+    <div class="grid two">
+      <div>
+        <form class="card tab" data-tab="read" data-active id="f-read">
+          <label class="field"><span>Unit</span><select name="serial" data-units></select></label>
+          <p class="stamp">Reads only. Nothing here changes the module.</p>
+          <div class="cmd-group">
+            <div class="row">
+              <button type="button" class="btn" data-cmd="status">Pins</button><span class="hint" role="button" tabindex="0" data-hint="The control pins the FT2232H reads. No I2C.">?</span>
+              <button type="button" class="btn" data-cmd="id">Identity</button><span class="hint" role="button" tabindex="0" data-hint="Vendor, part number, serial, date code, CMIS version, power class and state from the lower memory and page 00h.">?</span>
+              <button type="button" class="btn primary" data-cmd="decode">Decode every page</button><span class="hint" role="button" tabindex="0" data-hint="Reads every page the module advertises and decodes each field by its CMIS revision. A lane view first, then one block per page with the raw bytes behind a toggle.">?</span>
+              <label class="check"><input type="checkbox" name="save"> Save the decode record</label>
+            </div>
+            <div class="row">
+              <button type="button" class="btn" data-cmd="dump">Dump pages</button><span class="hint" role="button" tabindex="0" data-hint="Saves the raw pages to a dump file in the unit's record folder, with the thresholds and flags decoded as before.">?</span>
+              <button type="button" class="btn" data-cmd="reset">Reset timing</button><span class="hint" role="button" tabindex="0" data-hint="Pulses ResetL and times the first ACK. Needs SW_MODE in AUTO.">?</span>
+              <button type="button" class="btn" data-cmd="tristate">Tristate</button><span class="hint" role="button" tabindex="0" data-hint="Every FTDI pin back to input. Do this before MOD PWR goes off with a module in.">?</span>
+            </div>
+          </div>
+        </form>
+        <form class="card tab" data-tab="control" id="f-regs">
+          <h3>Registers</h3>
+          <label class="field"><span>Unit</span><select name="serial" data-units></select></label>
+          <div class="fields">
+            <label class="field"><span>Page (hex) <span class="hint" role="button" tabindex="0" data-hint="CMIS page number, for example 0, 1, 10, 11, 13.">?</span></span><input name="page" value="0" pattern="[0-9a-fA-F]{1,2}"></label>
+            <label class="field"><span>Offset <span class="hint" role="button" tabindex="0" data-hint="Byte offset 0 to 255. Pages start at 128.">?</span></span><input name="off" value="0" type="number" min="0" max="255"></label>
+            <label class="field"><span>Bytes</span><input name="n" value="1" type="number" min="1" max="128"></label>
+            <label class="field"><span>Hex to write <span class="hint" role="button" tabindex="0" data-hint="Bytes as hex, for example ff or 1000. A write changes the module. Read back follows.">?</span></span><input name="hex" placeholder="ff" pattern="([0-9a-fA-F]{2})*"></label>
+          </div>
+          <div class="row"><button type="button" class="btn" data-cmd="reg-read">Read</button><span class="hint" role="button" tabindex="0" data-hint="Reads the bytes at the page and offset. The result shows them as hex.">?</span><button type="button" class="btn danger" data-cmd="reg-write">Write</button><span class="hint" role="button" tabindex="0" data-hint="Writes the hex bytes, then reads them back. A wrong write can stop the module until a power cycle.">?</span><span class="msg" id="regs-msg"></span></div>
+        </form>
+        <form class="card tab" data-tab="control" id="f-power">
+          <h3>High power</h3>
+          <label class="field"><span>Unit</span><select name="serial" data-units></select></label>
+          <div class="fields">
+            <label class="field"><span>Hold (s) <span class="hint" role="button" tabindex="0" data-hint="How long the module stays in high power. The tool pulls LPMode high at the end or at the thermal limit.">?</span></span><input name="hold" value="30" type="number" min="1" max="3600"></label>
+            <label class="field"><span>Budget (W) <span class="hint" role="button" tabindex="0" data-hint="The tester refuses a module whose MaxPower is above this. The default is the board's design limit.">?</span></span><input name="budget_w" data-budget type="number" step="0.5" min="1" max="12"></label>
+            <label class="field"><span>Reason for a budget change</span><input name="reason" placeholder="needed above the default only"></label>
+          </div>
+          <label class="check"><input type="checkbox" name="c1"> I release LPMode on purpose</label>
+          <label class="check"><input type="checkbox" name="c2"> A 3 A charger is on PWR ONLY and the host on PC</label>
+          <div class="row"><button type="button" class="btn danger" data-cmd="release">Release LPMode and hold</button><span class="hint" role="button" tabindex="0" data-hint="Takes the module to its working state and watches temperature and Vcc every second. The thermal limit or the hold time ends it.">?</span><span class="msg" id="power-msg"></span><span class="stamp last-run"></span></div>
+        </form>
+        <form class="card tab" data-tab="run" id="f-pair">
+          <h3>Two units</h3>
+          <div class="empty need-one" hidden><b>One unit on the host</b>A two-end run needs two units plugged into this computer.</div>
+          <div class="need-two">
+          <div class="row pair-row"><span class="stamp" data-pair-line></span><button type="button" class="btn small" data-swap>Swap A and B</button><span class="hint" role="button" tabindex="0" data-hint="Two units on the host make a pair. A is the lower serial. Swap changes which end sends first.">?</span></div>
+          <div class="fields">
+            <label class="field"><span>End A (generator)</span><select name="a" data-units></select></label>
+            <label class="field"><span>End B (checker)</span><select name="b" data-units data-second></select></label>
+            <label class="field"><span>Seconds</span><input name="time" value="20" type="number" min="2" max="3600"></label>
+            <label class="field"><span>Pattern <span class="hint" role="button" tabindex="0" data-hint="PRBS31Q is the usual choice for PAM4 lanes. The module must list it in its capabilities.">?</span></span><select name="pattern"><option>prbs31q</option><option>prbs31</option><option>prbs23q</option><option>prbs15q</option><option>prbs13q</option><option>prbs9q</option><option>ssprq</option></select></label>
+            <label class="field"><span>Application <span class="hint" role="button" tabindex="0" data-hint="Select this application on both ends first. A 400G module may power up in a 200G application.">?</span></span><input name="apsel" placeholder="1" type="number" min="1" max="8"></label>
+            <label class="field"><span>Budget (W)</span><input name="budget_w" data-budget type="number" step="0.5" min="1" max="12"></label>
+            <label class="field"><span>Reason for a budget change</span><input name="reason"></label>
+          </div>
+          <label class="check"><input type="checkbox" name="force_cmis"> Force on CMIS below 5.0 <span class="hint" role="button" tabindex="0" data-hint="The PRBS pages follow CMIS 5.2. A 4.x module needs this box, and may still have no such pages.">?</span></label>
+          <label class="check"><input type="checkbox" name="c1"> I release LPMode on purpose</label>
+          <label class="check"><input type="checkbox" name="c2"> A 3 A charger is on each PWR ONLY and both hosts on PC</label>
+          <div class="row"><button type="button" class="btn danger" data-cmd="prbs">PRBS both ways</button><span class="hint" role="button" tabindex="0" data-hint="A sends the pattern and B checks it, then the other way. One record with both directions and the BER per lane.">?</span><button type="button" class="btn danger" data-cmd="media-link">Media link check</button><span class="hint" role="button" tabindex="0" data-hint="Both ends in high power with the data paths up: are the media lanes linked, and which flags stay set.">?</span><span class="msg" id="pair-msg"></span><span class="stamp last-run"></span></div>
+          </div>
+        </form>
+        <form class="card tab" data-tab="query" id="f-cdb">
+          <h3>Command block (CDB)</h3>
+          <label class="field"><span>Unit</span><select name="serial" data-units></select></label>
+          <p class="stamp">Read-only queries over the command block interface. Nothing here changes the module.</p>
+          <div class="row">
+            <button type="button" class="btn" data-cdb="query">Query status</button><span class="hint" role="button" tabindex="0" data-hint="Command 0000h: is the CDB engine alive, and which revision it speaks.">?</span>
+            <button type="button" class="btn" data-cdb="fw-info">Firmware info</button><span class="hint" role="button" tabindex="0" data-hint="Command 0100h: the firmware images A and B, which one runs and which one is committed.">?</span>
+            <button type="button" class="btn" data-cdb="fw-features">Firmware features</button><span class="hint" role="button" tabindex="0" data-hint="Command 0041h: how the module takes a firmware download, block sizes and the copy and abort options.">?</span>
+            <button type="button" class="btn" data-cdb="features">Module features</button><span class="hint" role="button" tabindex="0" data-hint="Command 0040h: the command ranges the module implements.">?</span>
+          </div>
+        </form>
+        <form class="card tab" data-tab="query" id="f-fw">
+          <h3>Firmware</h3>
+          <label class="field"><span>Unit</span><select name="serial" data-units></select></label>
+          <div id="fw-note" class="note" hidden></div>
+          <div class="fields">
+            <input type="hidden" name="image">
+            <label class="field"><span>Image file <span class="hint" role="button" tabindex="0" data-hint="The vendor's firmware image. The file goes to the server under build/fw_images, named by its hash. The engine checks its size against the module's firmware features before it writes a byte.">?</span></span><input type="file" id="fw-file"><span class="stamp" id="fw-file-info">No file chosen yet.</span></label>
+          </div>
+          <div class="fields">
+            <label class="field"><span>Host password <span class="hint" role="button" tabindex="0" data-hint="The vendor's host password, four bytes as 0xNNNNNNNN, written to page 00h bytes 122 to 125 before the start command. The Credo refused the start command without one. The page never shows it again.">?</span></span><span class="row"><input name="password" type="password" autocomplete="off" placeholder="0x00000000"><button type="button" class="btn small" id="fw-pw-show" aria-pressed="false">Show</button></span></label>
+            <label class="field"><span>Image version <span class="hint" role="button" tabindex="0" data-hint="The version the file carries, as X.Y. The verify step and the run-only path compare it with the bank.">?</span></span><input name="image_version" placeholder="5.6"></label>
+            <label class="field"><span>Header bytes <span class="hint" role="button" tabindex="0" data-hint="The vendor header size the start command carries. Give it only when the module advertises one, often 0.">?</span></span><input name="header_bytes" inputmode="numeric" placeholder="0"></label>
+            <label class="field"><span>Commit confirmation <span class="hint" role="button" tabindex="0" data-hint="Type COMMIT and the module serial, for example COMMIT BN4N40523200046, before you click Commit.">?</span></span><input name="confirm_text" placeholder="COMMIT <serial>"></label>
+          </div>
+          <label class="check"><input type="checkbox" name="c1"> I have the vendor image for this exact part number</label>
+          <label class="check"><input type="checkbox" name="c2"> The charger is on PWR ONLY and the cable stays in until the end</label>
+          <div class="row">
+            <button type="button" class="btn" data-fw="info">Firmware info</button><span class="hint" role="button" tabindex="0" data-hint="What runs now, what is committed, and whether a download is allowed. Reads only.">?</span>
+            <button type="button" class="btn" data-fw="plan">Plan</button><span class="hint" role="button" tabindex="0" data-hint="Every guard and the CDB step list. Writes nothing.">?</span>
+            <button type="button" class="btn danger" data-fw="download">Download</button><span class="hint" role="button" tabindex="0" data-hint="Writes the image into the inactive bank, block by block. The running image stays untouched.">?</span>
+            <button type="button" class="btn danger" data-fw="run">Run</button><span class="hint" role="button" tabindex="0" data-hint="Starts the downloaded image. The module resets. A reset returns to the committed image until you commit.">?</span>
+            <button type="button" class="btn danger" data-fw="commit">Commit</button><span class="hint" role="button" tabindex="0" data-hint="Makes the running image the one the module boots. Needs the commit confirmation text.">?</span>
+            <span class="msg" id="fw-msg"></span>
+          </div>
+          <div id="fw-progress-box" hidden>
+            <div class="row"><progress id="fw-progress" max="100" value="0"></progress><span class="stamp" id="fw-progress-text"></span></div>
+            <div id="fw-steps" class="pre-rows"></div>
+          </div>
+          <div id="fw-after" class="note" hidden></div>
+        </form>
+        <form class="card tab" data-tab="run" id="f-trend">
+          <h3>Trend and loopback</h3>
+          <div class="empty need-one" hidden><b>One unit on the host</b>A two-end run needs two units plugged into this computer.</div>
+          <div class="need-two">
+          <div class="row pair-row"><span class="stamp" data-pair-line></span><button type="button" class="btn small" data-swap>Swap A and B</button></div>
+          <div class="fields">
+            <label class="field"><span>End A (generator)</span><select name="a" data-units></select></label>
+            <label class="field"><span>End B (checker or loop)</span><select name="b" data-units data-second></select></label>
+            <label class="field"><span>Seconds</span><input name="time" value="30" type="number" min="2" max="3600"></label>
+            <label class="field"><span>Pattern</span><select name="pattern"><option>prbs31q</option><option>prbs31</option><option>prbs23q</option><option>prbs15q</option><option>prbs13q</option><option>prbs9q</option><option>ssprq</option></select></label>
+            <label class="field"><span>Application</span><input name="apsel" placeholder="1" type="number" min="1" max="8"></label>
+            <label class="field"><span>Budget (W)</span><input name="budget_w" data-budget type="number" step="0.5" min="1" max="12"></label>
+            <label class="field"><span>Reason for a budget change</span><input name="reason"></label>
+          </div>
+          <label class="check"><input type="checkbox" name="force_cmis"> Force on CMIS below 5.0</label>
+          <label class="check"><input type="checkbox" name="c1"> I release LPMode on purpose</label>
+          <label class="check"><input type="checkbox" name="c2"> A 3 A charger is on each PWR ONLY and both hosts on PC</label>
+          <div class="row">
+            <button type="button" class="btn danger" data-cmd="trend">Trend A to B</button><span class="hint" role="button" tabindex="0" data-hint="One direction, sampled every second: BER and SNR per lane, temperature and Vcc.">?</span>
+            <button type="button" class="btn danger" data-cmd="loopback">Loopback through B</button><span class="hint" role="button" tabindex="0" data-hint="B loops its media input back. A sends and checks through the whole fiber out and back.">?</span>
+            <span class="msg" id="trend-msg"></span><span class="stamp last-run"></span>
+          </div>
+          </div>
+        </form>
+        <form class="card tab" data-tab="derive" id="f-db">
+          <h3>Cable database</h3>
+          <p class="stamp">The cable database: one criteria file per cable part number under <code>criteria/</code>. A derived file carries PROPOSED limits from the cable's own advertisement. A reviewer checks it, then commits it.</p>
+          <div id="db-list"></div>
+          <div class="fields">
+            <label class="field"><span>Unit with the cable</span><select name="serial" data-units></select></label>
+            <label class="field"><span>Author</span><input name="owner" placeholder="&lt;name&gt;"></label>
+            <label class="field"><span>Note</span><input name="note" placeholder="one line for the file head"></label>
+          </div>
+          <label class="check"><input type="checkbox" name="c1"> Also measure the ready time: I release LPMode on purpose</label>
+          <label class="check"><input type="checkbox" name="c2"> A 3 A charger is on PWR ONLY and the host on PC</label>
+          <div class="row"><button type="button" class="btn primary" id="db-derive">Derive from this cable</button><span class="hint" role="button" tabindex="0" data-hint="Reads identity, advertisement, capabilities and thresholds, then writes criteria/&lt;vendor&gt;-&lt;part&gt;.yaml. An existing file gets a .proposed.yaml beside it.">?</span><button type="button" class="btn" id="db-reload">Reload list</button><span class="msg" id="db-msg"></span></div>
+          <div id="db-preview" hidden></div>
+        </form>
+        <form class="card tab" data-tab="features" id="f-features">
+          <h3>Features</h3>
+          <p class="stamp">The matrix reads what the module advertises. Each row is in one of four states: works, hollow, not exercised, not advertised. Exercise runs the matching check and fills the result.</p>
+          <label class="field"><span>Unit</span><select name="serial" data-units></select></label>
+          <div class="fields">
+            <label class="field"><span>Budget (W) <span class="hint" role="button" tabindex="0" data-hint="An exercise that needs high power releases the module within this budget.">?</span></span><input name="budget_w" data-budget type="number" step="0.5" min="1" max="12"></label>
+            <label class="field"><span>Reason for a budget change</span><input name="reason"></label>
+          </div>
+          <label class="check"><input type="checkbox" name="c1"> I release LPMode on purpose, for the exercises that need high power</label>
+          <label class="check"><input type="checkbox" name="c2"> A 3 A charger is on PWR ONLY and the host on PC</label>
+          <div class="row"><button type="button" class="btn primary" data-feat="matrix">Build the matrix</button><span class="hint" role="button" tabindex="0" data-hint="Reads the advertisements and the diagnostic capabilities. Nothing changes on the module.">?</span><button type="button" class="btn danger" data-feat="all">Exercise every feature</button><span class="hint" role="button" tabindex="0" data-hint="Runs every check the matrix lists. The high-power ones need the two confirmations.">?</span><span class="msg" id="features-msg"></span></div>
+        </form>
+      </div>
+      <div>
+        <div id="eng-result" class="card"><div class="empty"><b>No result yet</b>Run a command on the left. Its result appears here as a card.</div></div>
+        <div id="eng-live" class="card" hidden><h3>Live</h3><svg class="chart" id="eng-chart"></svg><ul class="legend" id="eng-legend"></ul><div id="eng-lol" hidden></div><div id="eng-live2" hidden><svg class="chart" id="eng-chart2"></svg><ul class="legend" id="eng-legend2"></ul></div><p class="stamp" id="eng-snr-note" hidden></p></div>
+        <div id="eng-ber" class="card" hidden><h3>Bit error rate per lane</h3><svg class="chart" id="eng-bars"></svg><ul class="legend" id="eng-bars-legend"></ul><div class="lanes" id="eng-lanes"></div></div>
+        <details class="raw card" id="eng-logbox"><summary>Log</summary><pre class="mono-box log" id="eng-log"></pre></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="records" class="view">
+    <div class="page-head">
+      <div><h1>Records</h1><p>Every file the tester wrote, grouped by the cable it was read from. Click one to plot or read it.</p></div>
+      <div class="actions"><div class="seg" role="group" aria-label="Group by"><button class="btn" id="rec-by-cable" aria-pressed="true">By cable</button><button class="btn" id="rec-by-folder" aria-pressed="false">By folder</button></div><input id="record-filter" class="filter" type="search" placeholder="Filter by cable or file" aria-label="Filter by cable or file"><button class="btn" id="records-reload">Reload</button></div>
+    </div>
+    <div id="records-banner"></div>
+    <div class="grid two">
+      <div id="record-list" class="folders"></div>
+      <div>
+        <div class="card" id="record-pane"><div class="empty"><b>Nothing selected</b>Pick a file on the left.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="help" class="view help">
+    <div class="page-head"><div><h1>Help</h1><p>How to use each page, what the words mean, and what to do when something is off.</p></div></div>
+    <ul class="toc"><li><a class="btn" href="#help-cable">Cable</a></li><li><a class="btn" href="#help-test">Test a cable</a></li><li><a class="btn" href="#help-adv">Advanced</a></li><li><a class="btn" href="#help-rec">Records</a></li><li><a class="btn" href="#help-set">Settings</a></li><li><a class="btn" href="#help-gloss">Glossary</a></li><li><a class="btn" href="#help-fix">Troubleshooting</a></li><li><a class="btn" href="#help-ver">Versions</a></li></ul>
+    <div class="card" id="help-cable">
+      <h2>Cable</h2>
+      <ol>
+        <li>Plug the host cable into the PC port. The unit appears as a card.</li>
+        <li>Insert the cable end. The pins row says module present.</li>
+        <li>Click Read cable. The plate shows the identity, the applications and the test features.</li>
+        <li>Click Save passport to write the plate to a record file.</li>
+      </ol>
+      <details><summary>Show details</summary>
+        <p>The tester is a single-port QSFP-DD stick. It talks to one cable end over the management bus and has no data lanes of its own. Two sticks and a cable make a two-end test.</p>
+        <p>The pins row reads ModPrsL and IntL. Both low with no identity means a module is present or the rail is off. Turn MOD PWR on and read the cable.</p>
+        <p>The unit carries its serial CT2M-NN and a small FRU record in its EEPROM. The card shows it under the unit name.</p>
+        <p>Every field with a ? has a one-line meaning. The glossary below lists them all.</p>
+      </details>
+    </div>
+    <div class="card" id="help-test">
+      <h2>Test a cable</h2>
+      <ol>
+        <li>Choose one end or both ends, and the unit for each end.</li>
+        <li>Click Read cable. The label serial fills in, and the cable type matches the database.</li>
+        <li>Scan the label over the serial when the two differ. The operator name is yours to change.</li>
+        <li>Click Start the test. The page checks the switches and the module and tells you when one is off.</li>
+        <li>Watch the step card. It says what the running step reads and judges.</li>
+        <li>Read the verdict card. It names the next step. Copy the report for a ticket.</li>
+      </ol>
+      <details><summary>Show details</summary>
+        <p>The eight steps, what each reads and what it judges:</p>
+        <dl class="gloss" id="help-steps"></dl>
+        <p>A unit ships in AUTO with the slide switches at O. The software drives the control pins, so a technician never moves a switch. The pre-check reads the pins and names a switch only when it is off.</p>
+        <p>A module starts in low power and draws under 1.5 W. High power is its working state. The tool watches temperature every second and pulls the module back to low power at its warning level.</p>
+        <p>The module rail is built for 6 W. The tester refuses to release a module above the budget. A class 3 or higher module needs air over the sink.</p>
+        <p>Back to setup stops a run before step 1 and keeps the form. Skip appears only on a step the engine marks as skippable, and it records your reason. Stop ends the run at any step.</p>
+        <p>A cable without a criteria file runs without criteria, or you create a file from the cable on the Advanced page. With one end the PRBS step between two ends does not run.</p>
+      </details>
+    </div>
+    <div class="card" id="help-adv">
+      <h2>Advanced</h2>
+      <ol>
+        <li>Pick a task tab: Read, Control, Run, Query, Derive or Features. Each button has a ? with its meaning.</li>
+        <li>On Run, two units on the host make a pair. A is the lower serial. Swap A and B changes which end sends first.</li>
+        <li>On Features, build the matrix. Exercise a row or a group to fill its result.</li>
+        <li>Decode every page shows the lane view first, then one block per CMIS page.</li>
+        <li>Tick both confirmations before a high-power command. A budget change needs a reason.</li>
+        <li>Run it. The result card and the chart fill in; the raw JSON sits behind a toggle.</li>
+        <li>On Derive, make a criteria file from the plugged cable and copy the git add line.</li>
+      </ol>
+      <details><summary>Show details</summary>
+        <p>PRBS is a known bit pattern a module generates and checks on its own lanes. BER is errors divided by bits. A raw optical link before error correction may read 1e-5 to 1e-4 and still be good.</p>
+        <p>Some modules advertise a feature and return a placeholder. Examples: the same power on every lane, an SNR of 0 dB, a VDM page of zeros. The passport flags these, and a chart never plots an all-zero SNR series.</p>
+        <p>During a trend or loopback run the checker's loss-of-lock flags are read every second. The register clears on read, so each amber cell shows the lanes that lost lock in that second.</p>
+        <p>The Firmware card on Query reads the images and, with the vendor file, updates the inactive bank. The card says so when the update engine is not installed.</p>
+      </details>
+    </div>
+    <div class="card" id="help-rec">
+      <h2>Records</h2>
+      <ol>
+        <li>Open the Records page. Runs group by cable, with the serial on the card.</li>
+        <li>Type in the filter to find a cable or a unit.</li>
+        <li>Click a record to see its tables and charts.</li>
+      </ol>
+      <details><summary>Show details</summary>
+        <p>Every run writes the same files the command line writes: dumps, PRBS records, trend CSVs, passports and reports.</p>
+        <p>An optical transceiver is one module with its own serial, so it gets one card and a two-end record appears under both. A copper cable is one cable with two end serials and one card.</p>
+      </details>
+    </div>
+    <div class="card" id="help-set">
+      <h2>Settings</h2>
+      <ol>
+        <li>Pick light or dark.</li>
+        <li>Restore the first-use banners when you want them back.</li>
+        <li>Read the server instance, the budget and the record folders.</li>
+      </ol>
+      <details><summary>Show details</summary>
+        <p>Start the server with <code>aectest web --open</code>.</p>
+        <p>This server owns the units it opened. Stop it before a command-line run on the same stick. A lock file refuses a second opener.</p>
+        <p>The page keeps a heartbeat to the server. When the server stops, a banner says so and the page reconnects on its own. After a restart it reloads everything, and the form values stay.</p>
+        <p>The server looks for units at start, on every page load, on Refresh units and every 10 s while no job runs.</p>
+      </details>
+    </div>
+    <div class="card" id="help-gloss">
+      <h2>Glossary</h2>
+      <p>The same lines as the ? bubbles on the plate and the result cards.</p>
+      <dl class="gloss" id="glossary"></dl>
+    </div>
+    <div class="card" id="help-ver">
+      <h2>Versions</h2>
+      <p id="help-version">The software version and its release notes.</p>
+      <div id="help-changelog" class="rendered"></div>
+    </div>
+    <div class="card" id="help-fix">
+      <h2>Troubleshooting</h2>
+      <table class="t"><tr><th>Symptom</th><th>Cause</th><th>What to do</th></tr>
+        <tr><td>NACK from slave</td><td>MODE is in MAN and the MSEL slide is at O or H, so the module is deselected.</td><td>Set MODE to AUTO, then Refresh.</td></tr>
+        <tr><td>pins low: module present or rail off</td><td>The module rail is off, so the pull-ups read low.</td><td>Turn MOD PWR on and read the cable.</td></tr>
+        <tr><td>interrupt latched since insert</td><td>The module raised IntL at insert for its latched flags. They clear on read.</td><td>Read the cable. The flag names show on the pins row.</td></tr>
+        <tr><td>No unit on the host</td><td>The PC port is not connected, or another program holds the unit.</td><td>Plug the PC port, close the other program, then Refresh units.</td></tr>
+        <tr><td>Server restarted</td><td>The server process was started again.</td><td>Nothing. The page reloads on its own and keeps your form values.</td></tr>
+        <tr><td>Budget refused</td><td>The module declares more power than the rail budget.</td><td>Raise the budget with a reason on Advanced, or test a module within the budget.</td></tr>
+        <tr><td>Label serial differs</td><td>The scanned label and the EEPROM serial do not match.</td><td>Check the label. A real mismatch is a FAIL by design.</td></tr>
+        <tr><td>Unit disconnected, No such device</td><td>The unit left the USB bus during a run: the host cable, or a latch-up of the FTDI.</td><td>Unplug the host cable and the charger, wait 30 s, plug the host cable, then Refresh units.</td></tr>
+        <tr><td>Cable removed during the test</td><td>The cable end came out of the cage mid-step.</td><td>Seat it again and start the test over. The stopped run stays on record.</td></tr>
+        <tr><td>Connection lost during the run</td><td>The server stopped mid-run.</td><td>Wait for Live in the corner, then start the test again. The log keeps the last state.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="settings" class="view">
+    <div class="page-head"><div><h1>Settings</h1><p>The server, the theme and the record folders.</p></div></div>
+    <div class="card">
+      <dl class="kv" id="settings-list"></dl>
+      <div class="row" style="margin-top:16px"><label>Clock ramp rounds <input id="ramp-rounds" type="number" min="1" max="200" step="1" style="width:6em" title="The stress rounds a unit must pass at 400 kHz before the tool keeps that clock. The default is 20."></label><button class="btn" id="ramp-rounds-save">Save</button><span class="stamp">The unit opens at 100 kHz. After the cable is read, this many clean rounds earn 400 kHz.</span></div>
+      <div class="row" style="margin-top:16px"><button class="btn" id="theme-toggle">Switch theme</button><button class="btn" id="hints-reset">Show the first-use banners again</button></div>
+    </div>
+  </section>
+</main>
+<div id="pop" role="tooltip" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="/conn.js"></script>
+<script src="/labels.js"></script>
+<script src="/help.js"></script>
+<script src="/tabs.js"></script>
+<script src="/md.js"></script>
+<script src="/steps.js"></script>
+<script src="/features.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

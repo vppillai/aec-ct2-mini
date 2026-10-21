@@ -1,0 +1,40 @@
+schema: aectest.criteria/1
+sku: credo-cac41x321d1d
+owner: "<name>"
+identity:
+  vendor:   {matches: "^Credo"}                 # 00h:129-144
+  part_number: {matches: "^CAC41X321D1D"}       # 00h:148-163
+  cmis_revision: {min: "4.0"}
+  identifier: {equals: 0x18}                    # QSFP-DD, SFF-8024 Table 4-1
+  power_class: {max: 3}                         # MSA Table 12; class ≥ 4 unsupported on the MINI (S4)
+  max_power_w: {max: 6.0}                       # S4 gate; over → INCONCLUSIVE OVER-JIG-BUDGET, not FAIL
+  ends_same_pn: true
+  ends_same_sn: unknown
+  label_sn_matches_cmis: true                   # scanned label vs 00h:166-181
+timing:
+  mgmt_init_ms: {max: 2000}                     # MSA Table 9 MgmtInitDuration (tool-side ms includes USB latency)
+  module_ready_s: {max: 15}                     # PROPOSED: tool default --timeout; module advertises its own in 01h
+low_power:
+  module_state: {equals: ModuleLowPwr}          # CMIS Table 8-7, 001b
+  flags_byte9: {flag_clear: 0xFF}
+  temp_c: {range: [5, 60]}                      # PROPOSED sanity window, hood off, room ambient
+  vcc_v:  {range: [3.135, 3.465]}               # MSA Table 13 as seen by VccMon (T6: within 100 mV of the pad)
+high_power:
+  module_state: {equals: ModuleReady}
+  dp_states: {all_lanes_equal: DPActivated}
+  temp_c_max: {from_module: TempMonHighWarningThreshold, margin: -5}   # Page 02h; PROPOSED margin
+  temp_slope_c_per_min: {max: 2.0}              # PROPOSED: plateau check over the last 30 s of the soak
+  vcc_v: {range: [3.135, 3.465]}
+  failure_flag_tx_11h_135: {flag_clear: 0xFF}   # test plan §7: a Tx failure with open inputs is a finding
+prbs:
+  pattern: prbs31q                              # CMIS Table 8-98 ID 0; else first pattern both ends advertise
+  seconds_per_direction: 60
+  lane_mask: 0xFF
+  placement_preference: raw                     # fec_placement() l.724: raw line pattern when both ends offer it
+  limits:
+    raw:      {ber_max_per_lane: 2.4e-4}        # IEEE 802.3 KP4 RS(544,514) FEC input ceiling — FROM MEMORY, verify
+    post_fec: {errors_max_per_lane: 0}          # 0 errors over the gate (T11 plan criterion)
+    tightened: null                             # filled from golden-cable statistics (§4.1 rule 3)
+  require_measured: true                        # MEASURED verdict on both directions, else INCONCLUSIVE
+vdm:
+  judge: false                                  # record only until the observable set of this module is known

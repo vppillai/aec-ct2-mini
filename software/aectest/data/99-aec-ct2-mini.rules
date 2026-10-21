@@ -1,0 +1,21 @@
+# AEC-CT2-MINI on-board FT2232H -- Linux udev rules template. @PID@ is replaced at install time; never edit the number by hand.
+# Install before the unit is plugged in for the first time: `aectest setup-linux` does it, or by hand:
+#   PID=6010; sed "s/@PID@/$PID/g" 99-aec-ct2-mini.rules | sudo tee /etc/udev/rules.d/99-aec-ct2-mini.rules >/dev/null \
+#     && sudo udevadm control --reload-rules && sudo udevadm trigger
+# then plug the PC port. Add yourself to plugdev (or change GROUP); TAG+="uaccess" also grants the logged-in seat on hosts
+# that have no plugdev group (Fedora / Arch).
+#
+# 0. A unit that has no serial string yet: uncomment the line below for that programming session only, install, then
+#    comment it out again and install again (while active it grants plugdev access to every 0403:6010 on the host).
+#SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6010", GROUP="plugdev", MODE="0664", TAG+="uaccess", ENV{ID_MM_DEVICE_IGNORE}="1"
+#
+# 1. libusb access for pyftdi; the serial match limits this rule to the tester units (serial CT2M-NN).
+SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="@PID@", ATTR{serial}=="CT2M-*", GROUP="plugdev", MODE="0664", TAG+="uaccess", ENV{ID_MM_DEVICE_IGNORE}="1"
+# 2. ModemManager must never probe the unit: its DTR/RTS toggling reaches the module reset and the SDA line while the
+#    chip is still in UART mode. ID_MM_DEVICE_IGNORE covers the tty children too.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="@PID@", ATTRS{serial}=="CT2M-*", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_PORT_IGNORE}="1"
+# 3. Keep ftdi_sio off the unit between commands: pyftdi detaches the kernel driver when it opens and re-attaches it in
+#    close() after every command, so /dev/ttyUSB* reappears between commands and anything that opens it would toggle
+#    DTR/RTS. The kernel re-attach arrives as a "bind" uevent, not "add", hence both.
+#    Alternative (all FT2232H on the host): echo "blacklist ftdi_sio" | sudo tee /etc/modprobe.d/aec-ct2.conf
+ACTION=="add|bind", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="@PID@", ATTRS{serial}=="CT2M-*", DRIVER=="ftdi_sio", RUN+="/bin/sh -c 'echo -n %k > /sys/bus/usb/drivers/ftdi_sio/unbind'"

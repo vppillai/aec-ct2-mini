@@ -1,0 +1,11 @@
+# aectest jig profile. The commissioning engineer writes it once per jig and signs it:
+#   python -m aectest.jig sign jig_profile.example.yaml "<name>"
+# The technician never edits it. An edit after signing is refused at load.
+jig: JIG-01
+units: {A: CT2M-01, B: CT2M-02}          # the unit serials from the case labels; end A is the left unit
+pid: 0x6010                              # the USB product id of the units
+power: {source: "3 A USB-C charger on PWR ONLY, host on PC", acknowledged_by: "<name>", date: "2026-10-11"}   # the charger rule; quoted: a bare date is a datetime.date
+straps_intact: true                      # the solder straps as shipped; false = an engineering unit, the technician flow refuses it
+hood: "off"                              # quoted: YAML 1.1 reads a bare off as false; the posture input
+signed_by: <name>
+signed: cbf04b6383b23cdb7618c1b254d0b713eebff3d8e0e137b12220e07641317296

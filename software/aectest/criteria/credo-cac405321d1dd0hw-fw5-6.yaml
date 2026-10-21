@@ -1,0 +1,44 @@
+# Source: unit CT2M-02, module Credo CAC405321D1DD0HW serial BN4N40523200046, record dump_credo_fw5.6_pages00-14.json.
+# Written by aectest derive. Commit it after review: the tester reads criteria/<sku>.yaml by vendor and part number.
+schema: aectest.criteria/1
+sku: credo-cac405321d1dd0hw-fw5-6
+owner: "<name>"
+match: {firmware: "5.6"}
+soak_s: 120
+identity:
+  vendor:   {matches: "^Credo"}   # 00h:129-144
+  part_number: {matches: "^CAC405321D1DD0HW"}   # 00h:148-163
+  cmis_revision: {min: "4.0"}   # 00h:1 as read
+  identifier: {equals: 0x18}   # 00h:0
+  power_class: {max: 3}
+  max_power_w: {max: 4.5}
+  ends_same_pn: true
+  ends_same_sn: unknown                         # record only
+  label_sn_matches_cmis: true
+timing:
+  mgmt_init_ms: {max: 2000}                     # MSA Table 9 MgmtInitDuration
+  module_ready_s: {max: 5}
+low_power:
+  module_state: {equals: ModuleLowPwr}
+  flags_byte9: {flag_clear: 0xFF}
+  temp_c: {range: [5, 60]}                      # PROPOSED sanity window, hood off, room ambient
+  vcc_v:  {range: [3.135, 3.465]}               # MSA Table 13
+high_power:
+  module_state: {equals: ModuleReady}
+  dp_states: {all_lanes_equal: [DPInit, DPActivated]}
+  temp_c_max: {from_module: TempMonHighWarningThreshold, margin: -5}
+  temp_slope_c_per_min: {max: 7.0}
+  vcc_v: {range: [3.135, 3.465]}
+  failure_flag_tx_11h_135: {flag_clear: 0xFF}
+prbs:
+  pattern: prbs31q   # PROPOSED: no media-side generator on 13h:134-135; a pattern needs a host
+  seconds_per_direction: 60
+  lane_mask: 0xFF
+  placement_preference: raw
+  limits:
+    raw:      {ber_max_per_lane: 2.4e-4}        # IEEE 802.3 KP4 RS(544,514) FEC input ceiling
+    post_fec: {errors_max_per_lane: 0}
+    tightened: null
+  require_measured: false   # no media-side generator and checker pair on 13h: a pair PRBS cannot be MEASURED here, never a FAIL
+vdm:
+  judge: false   # no VDM pages advertised

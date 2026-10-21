@@ -1,0 +1,45 @@
+site_name: AEC-CT2-MINI cable tester
+site_description: A hand-held tester for QSFP-DD active electrical cables
+site_url: https://vppillai.github.io/aec-ct2-mini/
+repo_url: https://github.com/vppillai/aec-ct2-mini
+docs_dir: docs
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.footer
+    - content.code.copy
+plugins:
+  - search
+markdown_extensions:
+  - tables
+  - admonition
+nav:
+  - Introduction: index.md
+  - Getting started: getting-started.md
+  - Hardware: hardware.md
+  - Specifications: specifications.md
+  - Safety: safety.md
+  - Software: software.md
+  - Test a cable: test-a-cable.md
+  - Advanced: advanced.md
+  - Firmware update: firmware-update.md
+  - Records: records.md
+  - Troubleshooting: troubleshooting.md
+  - Glossary: glossary.md
+  - Release notes: release-notes.md
+  - Disclaimer: disclaimer.md

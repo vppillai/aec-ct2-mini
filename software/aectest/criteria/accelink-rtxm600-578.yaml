@@ -1,0 +1,42 @@
+# Source: unit CT2M-02, module ACCELINK RTXM600-578 serial MH261702130006, record dump_CT2M-02_20261020T025031.211235Z.json.
+# Written by aectest derive. Commit it after review: the tester reads criteria/<sku>.yaml by vendor and part number.
+schema: aectest.criteria/1
+sku: accelink-rtxm600-578
+owner: "<name>"
+identity:
+  vendor:   {matches: "^ACCELINK"}   # 00h:129-144
+  part_number: {matches: "^RTXM600-578"}   # 00h:148-163
+  cmis_revision: {min: "5.2"}   # 00h:1 as read
+  identifier: {equals: 0x18}   # 00h:0
+  power_class: {max: 4}
+  max_power_w: {max: 8}
+  ends_same_pn: true
+  ends_same_sn: unknown                         # record only
+  label_sn_matches_cmis: true
+timing:
+  mgmt_init_ms: {max: 2000}                     # MSA Table 9 MgmtInitDuration
+  module_ready_s: {max: 2}
+low_power:
+  module_state: {equals: ModuleLowPwr}
+  flags_byte9: {flag_clear: 0xFF}
+  temp_c: {range: [5, 60]}                      # PROPOSED sanity window, hood off, room ambient
+  vcc_v:  {range: [3.135, 3.465]}               # MSA Table 13
+high_power:
+  module_state: {equals: ModuleReady}
+  dp_states: {all_lanes_equal: DPActivated}     # 11h:128-131
+  temp_c_max: {from_module: TempMonHighWarningThreshold, margin: -5}
+  temp_slope_c_per_min: {max: 9.0}              # PROPOSED: the fit under PRBS reads tau 370 s, rise 62 C (7.8 C/W); 11 C/min in the first minute, 8.5 after it; a soak over 4 min needs forced air (throttle at 292 s hood off)
+  vcc_v: {range: [3.135, 3.465]}
+  failure_flag_tx_11h_135: {flag_clear: 0xFF}
+prbs:
+  pattern: prbs31q
+  seconds_per_direction: 60
+  lane_mask: 0x0F
+  placement_preference: raw
+  limits:
+    raw:      {ber_max_per_lane: 2.4e-4}
+    post_fec: {errors_max_per_lane: 0}
+    tightened: null
+  require_measured: true
+vdm:
+  judge: false   # VDM advertised: record only until its observables are known
