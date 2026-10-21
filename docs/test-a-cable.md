@@ -25,7 +25,7 @@ The **Test a cable** page runs one cable through eight steps and ends with one w
 
 ![A test in the high-power step](images/ui_test_running.png)
 
-*Step 4 of 8 in training mode. The step card, the pre-check of both units and the top of the live chart.*
+*Step 4 of 8 in simulation mode. The step card, the pre-check of both units and the top of the live chart.*
 
 **Back to setup** stops a run before the first step and keeps the form. **Stop the test** ends the run at any step. A stopped run stays on record.
 

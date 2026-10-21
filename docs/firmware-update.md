@@ -4,7 +4,7 @@ A cable end has two firmware banks. One runs. The other can take a new image. Th
 
 ![The Query tab with the Firmware card and a firmware info result](images/ui_firmware.png)
 
-*The Firmware card in training mode. Firmware info shows both banks: which one runs, which one is committed, and their versions.*
+*The Firmware card in simulation mode. Firmware info shows both banks: which one runs, which one is committed, and their versions.*
 
 ## What you need
 

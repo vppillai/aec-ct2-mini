@@ -767,7 +767,7 @@ def serve(port=8765, dry_run=False, sku=None, roots=RECORD_ROOTS, open_browser=F
 def add_web(sub):
     ap = sub.add_parser('web', help='the browser UI on localhost')
     ap.add_argument('--port', type=int, default=8765)
-    ap.add_argument('--dry-run', action='store_true', help='the fake pair FAKE-A / FAKE-B (training, demo, selftest)')
+    ap.add_argument('--dry-run', action='store_true', help='the fake pair FAKE-A / FAKE-B (simulation, demo, selftest)')
     ap.add_argument('--sku', help='--dry-run: the fake module image of this SKU (fake_modules)')
     ap.add_argument('--open', action='store_true', help='open the page in the default browser')
     ap.add_argument('--speed', default='auto', choices=('auto', '100k', '1M'), help='I2C clock: auto (default: the browser ramps to 400k after the plate), 100k fixed, 1M when advertised')

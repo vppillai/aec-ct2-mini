@@ -16,5 +16,5 @@ The first public release.
 - Command block queries and the firmware update: plan, download, run, commit.
 - Records grouped by cable, with charts for every record type.
 - The command line: the same functions, plus a lot loop and a lot export.
-- Training mode on simulated units with `--dry-run`.
+- Simulation mode on simulated units with `--dry-run`.
 - The management bus clock earns 400 kHz per cable after 20 clean rounds, else it stays at 100 kHz.

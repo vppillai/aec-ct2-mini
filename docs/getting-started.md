@@ -73,7 +73,7 @@ Do not pull the charger while a cable is in high power. See [Safety](safety.md).
 
 The browser opens the page at `http://127.0.0.1:8765`. If no browser opens, type that address into one. The **Cable** page shows one card per unit it found. The **PC** light on each unit comes on when the software has opened it.
 
-No unit yet? Try the training mode: `aectest web --dry-run --open`. It runs on two simulated units with a simulated cable.
+No unit yet? Try the simulation mode: `aectest web --dry-run --open`. It runs on two simulated units with a simulated cable.
 
 ## Step 6: read the cable
 
@@ -93,7 +93,7 @@ The plate says whether the cable fits the power budget of the unit. The budget i
 
 ![The Test a cable page before the start](images/ui_test_setup.png)
 
-*The setup form after Read cable, in training mode. The simulated cable matched a proposed criteria file, so Start the test is enabled.*
+*The setup form after Read cable, in simulation mode. The simulated cable matched a proposed criteria file, so Start the test is enabled.*
 
 The test runs eight steps. The page says what each step reads and judges. A full test takes about five minutes. [Test a cable](test-a-cable.md) gives the time of each step.
 
@@ -107,7 +107,7 @@ At the end the page asks you to remove the cable. Pull both ends by their pull t
 
 ![The verdict card after a PASS](images/ui_test_verdict.png)
 
-*The end of a test in training mode. The card names the next step. Copy the report for a ticket.*
+*The end of a test in simulation mode. The card names the next step. Copy the report for a ticket.*
 
 Click **Test another cable** for the next one. Every run leaves a folder of records. See [Records](records.md).
 

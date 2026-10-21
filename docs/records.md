@@ -4,7 +4,7 @@ Every run writes files. The web UI and the command line write the same files to 
 
 ![The Records page with a pattern test record open](images/ui_records.png)
 
-*The Records page in training mode. The left side groups files by cable. The right side shows the lane table and the chart of the chosen file.*
+*The Records page in simulation mode. The left side groups files by cable. The right side shows the lane table and the chart of the chosen file.*
 
 ## Where the files go
 
@@ -59,5 +59,5 @@ The table lists what can look wrong on the Records page.
 |---|---|
 | The Records page is empty | No run has written a file yet. Run a test or save a passport. Click **Reload**. |
 | A file sits under `No cable identity` | The file names no cable, for example a note. It is still in the folder. |
-| A record from a training run | Its manifest carries `dry_run: true`. It is never a real result. |
+| A record from a simulation run | Its manifest carries `dry_run: true`. It is never a real result. |
 | A session with no verdict | The run was stopped or the server went away. The events file holds the last state. |

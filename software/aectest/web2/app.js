@@ -334,7 +334,7 @@ async function loadUnits() {
   const cards = $('#cable-cards'); cards.innerHTML = '';
   if (!INFO.units.length) cards.innerHTML = '<div class="empty"><b>No unit on the host</b>Plug the PC port of a stick into this computer, then Refresh units.<div class="row"><button class="btn" onclick="loadUnits()">Refresh units</button></div></div>';
   for (const u of INFO.units) { const c = document.createElement('div'); c.className = 'card'; cards.appendChild(c); cableCard(u, c); }
-  $('#settings-list').innerHTML = Object.entries({ backend: INFO.dry_run ? 'fake (training)' : 'hardware', 'server instance': INFO.instance, started: new Date(INFO.started * 1000).toLocaleString(), 'budget W': INFO.budget_w, units: INFO.units.map(u => `${u.serial}: ${u.fru ? u.fru.fru : 'FRU not read yet'}`).join('; ') || 'none', 'record folders': (INFO.record_roots || []).join('\n'), 'command of record': 'aectest web2 --open', 'first front end': 'aectest web --open' }).map(([k, v]) => `<dt>${esc(k)}</dt><dd class="wrap">${esc(v)}</dd>`).join('');
+  $('#settings-list').innerHTML = Object.entries({ backend: INFO.dry_run ? 'simulated' : 'hardware', 'server instance': INFO.instance, started: new Date(INFO.started * 1000).toLocaleString(), 'budget W': INFO.budget_w, units: INFO.units.map(u => `${u.serial}: ${u.fru ? u.fru.fru : 'FRU not read yet'}`).join('; ') || 'none', 'record folders': (INFO.record_roots || []).join('\n'), 'command of record': 'aectest web2 --open', 'first front end': 'aectest web --open' }).map(([k, v]) => `<dt>${esc(k)}</dt><dd class="wrap">${esc(v)}</dd>`).join('');
 }
 
 // ---- Test view: setup

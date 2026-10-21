@@ -39,7 +39,7 @@ The software opens the unit with a fixed version of `pyftdi`. It refuses to star
 .venv/bin/aectest web --open
 ```
 
-The page runs at `http://127.0.0.1:8765` on your computer only. If no browser opens, type that address into one. `--port N` changes the port. `--dry-run` starts the training mode with two simulated units. The software finds the units at start and every 10 seconds while idle. **Refresh units** on the Cable page looks again.
+The page runs at `http://127.0.0.1:8765` on your computer only. If no browser opens, type that address into one. `--port N` changes the port. `--dry-run` starts the simulation mode with two simulated units. The software finds the units at start and every 10 seconds while idle. **Refresh units** on the Cable page looks again.
 
 The server owns the units it opened. Stop it before a command-line run on the same unit. A second program that tries the same unit is refused.
 
@@ -58,11 +58,11 @@ The table lists the six pages of the web UI.
 
 ![The Help page](images/ui_help.png)
 
-*The Help page in training mode. Each card has the steps for one page and the details behind Show details.*
+*The Help page in simulation mode. Each card has the steps for one page and the details behind Show details.*
 
 ![The Settings page](images/ui_settings.png)
 
-*The Settings page in training mode. The record folders are where the files go.*
+*The Settings page in simulation mode. The record folders are where the files go.*
 
 Every field with a `?` has a one-line meaning. The glossary on the Help page lists them all.
 
@@ -96,7 +96,7 @@ The guided test on the command line needs a jig profile. The profile names the t
 
 A profile edited after signing is refused. Sign it again.
 
-## Training mode
+## Simulation mode
 
 Every command takes `--dry-run`. The software then talks to two simulated units with a simulated cable. Use it to learn the pages before the first real cable. The records of a dry run are marked as such and never count as real results.
 

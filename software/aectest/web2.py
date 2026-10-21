@@ -217,7 +217,7 @@ def serve(port=8765, dry_run=False, sku=None, roots=web.RECORD_ROOTS, open_brows
 def add_web(sub, name='web2'):
     ap = sub.add_parser(name, help='the second browser UI on localhost')
     ap.add_argument('--port', type=int, default=8765)
-    ap.add_argument('--dry-run', action='store_true', help='the fake pair FAKE-A / FAKE-B (training, demo, selftest)')
+    ap.add_argument('--dry-run', action='store_true', help='the fake pair FAKE-A / FAKE-B (simulation, demo, selftest)')
     ap.add_argument('--sku', help='--dry-run: the fake module image of this SKU (fake_modules)')
     ap.add_argument('--open', action='store_true', help='open the page in the default browser')
     ap.set_defaults(func=lambda a: serve(a.port, a.dry_run, a.sku, open_browser=a.open))

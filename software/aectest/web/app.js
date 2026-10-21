@@ -73,7 +73,7 @@ function connect() {
     if (conn.restarted) { toast('Server restarted, data refreshed', 0, true); refreshAll(); }
     else if (before.status !== 'live' && before.instance !== null) { toast('Connected again'); }
     renderConn();
-    $('#mode').textContent = `${INFO.dry_run ? 'Fake backend (training)' : 'Hardware'}, up ${Math.round(e.uptime_s)} s`;
+    $('#mode').textContent = `${INFO.dry_run ? 'Simulated units' : 'Hardware'}, up ${Math.round(e.uptime_s)} s`;
     if (e.units && !conn.restarted) unitsSeen(e.units);
   };
   es.onerror = () => {
@@ -370,7 +370,7 @@ function renderClocks() {
     el.innerHTML = `<span class="badge ${ok ? 'pass' : fell ? 'warn' : 'info'}" title="${esc(c.i2c_ramp || '')}">${esc(clockText(serial))}</span>${hb('i2c_clock')}`;
   }
   const names = Object.keys(CLOCKS);
-  $('#mode').textContent = (INFO.dry_run ? 'Fake backend (training)' : 'Hardware') + (names.length ? ' · ' + names.map(s => `${s} ${clockText(s).replace('I2C ', '')}`).join(', ') : '');
+  $('#mode').textContent = (INFO.dry_run ? 'Simulated units' : 'Hardware') + (names.length ? ' · ' + names.map(s => `${s} ${clockText(s).replace('I2C ', '')}`).join(', ') : '');
 }
 async function rampClock(serial) {
   try {
@@ -383,7 +383,7 @@ async function loadUnits() {
   INFO = await api('/api/units');
   INFO.units.sort((a, b) => String(a.serial).localeCompare(String(b.serial)));
   Object.assign(CLOCKS, INFO.i2c || {});
-  $('#mode').textContent = INFO.dry_run ? 'Fake backend (training)' : 'Hardware';
+  $('#mode').textContent = INFO.dry_run ? 'Simulated units' : 'Hardware';
   const opts = INFO.units.map(u => `<option>${esc(u.serial)}</option>`).join('');
   $$('select[data-units]').forEach(s => { const was = s.value; s.innerHTML = opts; if (s.dataset.second !== undefined && INFO.units[1]) s.value = INFO.units[1].serial; if (was && INFO.units.some(u => u.serial === was)) s.value = was; });
   pairLines();
@@ -397,7 +397,7 @@ async function loadUnits() {
   for (const u of INFO.units) { const c = document.createElement('div'); c.className = 'card'; cards.appendChild(c); cableCard(u, c); }
   renderClocks();
   const rr = $('#ramp-rounds'); if (rr && !rr.value) rr.value = INFO.i2c_ramp_rounds || 20;
-  $('#settings-list').innerHTML = kvTable({ backend: INFO.dry_run ? 'fake (training)' : 'hardware', 'server instance': INFO.instance, 'started': new Date(INFO.started * 1000).toLocaleString(), 'budget W': INFO.budget_w, units: INFO.units.map(u => `${u.serial}: ${u.fru ? u.fru.fru : 'FRU not read yet'}`).join('; ') || 'none', 'record folders': INFO.record_roots }).replace('<table class="t">', '<table class="t">');
+  $('#settings-list').innerHTML = kvTable({ backend: INFO.dry_run ? 'simulated' : 'hardware', 'server instance': INFO.instance, 'started': new Date(INFO.started * 1000).toLocaleString(), 'budget W': INFO.budget_w, units: INFO.units.map(u => `${u.serial}: ${u.fru ? u.fru.fru : 'FRU not read yet'}`).join('; ') || 'none', 'record folders': INFO.record_roots }).replace('<table class="t">', '<table class="t">');
 }
 
 $('#ramp-rounds-save').onclick = async () => {
