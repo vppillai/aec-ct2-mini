@@ -84,7 +84,7 @@ When a charger is plugged in, the charger feeds the unit. The host port then car
 
 ### Sides and sole
 
-Each long side has a row of vent slots. Two round bosses sit on each long side near the rear. They belong to a coupling feature under test. The sole has four rubber feet. The feet cover the four screws that hold the box together. The sole carries no label.
+Each long side has a row of vent slots. Two small round pockets sit in each long side near the rear. They belong to a coupling feature under test. The sole has four rubber feet. The feet cover the four screws that hold the box together. The sole carries no label.
 
 ![The unit from above](images/case_top.png)
 
