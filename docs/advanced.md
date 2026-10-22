@@ -57,6 +57,18 @@ The live chart shows temperature and voltage. The result shows one card per dire
 
 **Media link check** brings the data path up on both ends and reports the linked lanes. **Trend** runs the pattern one way and samples every second. **Loopback through B** sends the pattern out of A and back through B. Both draw a strip under the chart with one cell per second. An amber cell marks a lane that lost lock in that second.
 
+### What a good run looks like
+
+![A trend record on an optical pair](images/ui_trend_fibre.png)
+
+*A trend record of an optical module pair over a multimode fibre. The BER falls from 1e-2 to 1e-9 in the first seconds and holds there. The band under the chart marks each second with a loss of lock.*
+
+![A far-end loopback record](images/ui_loop_fibre.png)
+
+*A far-end loopback record. The pattern goes out, loops at the far end and comes back through both fibres. The BER is still falling at 60 s. Judge a loopback on a longer window.*
+
+Judge a BER after the warm-up. An optical module needs about a minute at high power before its numbers settle. The first window from a cold start reads three decades worse than the settled value.
+
 ## Command block queries
 
 The Query tab reads over the command block interface, CDB. **Query status** reads the engine state. **Firmware info** reads the banks and the versions. **Firmware features** and **Module features** list what the cable supports, with the command names grouped by family. Nothing here changes the cable.

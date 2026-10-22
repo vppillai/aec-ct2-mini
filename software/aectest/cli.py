@@ -506,6 +506,7 @@ def run_bringup(a, ap):
             ap.error(f'{a.cmd} needs two DISTINCT FT2232H serials A:B (see --list)')
         names = (sa or 'A', sb or 'B')
         from .campaign import cmd_flag_matrix, cmd_lane_integrity, cmd_si_sweep
+        from .tests import PrbsAbort
         gen = open_port(sa, a, allow)
         try:
             chk = open_port(sb or 'FAKE-B', a, allow)
@@ -517,6 +518,9 @@ def run_bringup(a, ap):
                     cmd_si_sweep(gen, chk, a.pattern, a.time, a.budget_w, a.timeout, a.out, names, say, a.apsel)
                 else:
                     cmd_flag_matrix(gen, chk, a.pattern, a.budget_w, a.timeout, a.out, names, say, a.apsel)
+            except PrbsAbort as e:  # the campaign commands re-raise after writing their ABORTED record (thermal, Ctrl-C, a read-back)
+                say(f'{a.cmd}: INCONCLUSIVE: {e}', err=True)
+                return 2
             finally:
                 chk.close()
         finally:
